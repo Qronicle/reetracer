@@ -1,0 +1,87 @@
+<script src="src/Math2.js"></script>
+<script src="src/Vector3.js"></script>
+<script>
+    class AbstractClass {
+
+        constructor() {
+        }
+
+        set property(value) {
+            this.property_ = value;
+        }
+
+        get property() {
+            return this.property_;
+        }
+
+    }
+
+    class Subclass extends AbstractClass {
+
+        constructor() {
+            super();
+        }
+
+        set property(value) {
+            console.log("ok");
+            super.property = value;
+        }
+
+        //get property() {
+        //  return super.property;
+        //}
+
+    }
+    var s = new Subclass();
+    s.property = 'ok';
+
+    var normals = {
+        backwards: new Vector3(0, 0, -1),
+        forwards: new Vector3(0, 0, 1),
+        right: new Vector3(1, 0, 0),
+        up: new Vector3(0, 1, 0),
+        upRight: new Vector3(1, 1, 0),
+        upLeft: new Vector3(-1, 1, 0),
+        forwardRight: new Vector3(1, 0, 1),
+        forwardUpRight: new Vector3(1, 1, 0.1)
+    };
+    var up = new Vector3(0, 1, 0);
+    var right = new Vector3(0, 0, 1);
+    var uNormal = new Vector3(0, 0, 1);
+    var uTangent = new Vector3(1, 0, 0);
+    var uBitangent = new Vector3(0, 1, 0);
+    for (var n in normals) {
+        var normal = normals[n].unit();
+        // Calculate tangent
+        if (normal.x != 0 || normal.z != 0) {
+            var tangent = normal.cross(up).unit();
+        } else {
+            tangent = new Vector3(0, 0, 1);
+        }
+        /*if (normal.x != 0 || normal.y != 0) {
+            var bitangent = normal.cross(right).unit();
+            if (bitangent.y < 0) bitangent = bitangent.negative();
+        } else {
+            bitangent = new Vector3(0, 1, 0);
+        }*/
+        var bitangent = normal.cross(tangent).unit();
+        if (bitangent.y < 0) bitangent = bitangent.negative();
+        //console.log(n, 'tangent', tangent);
+        //console.log(n, 'bitangent', bitangent);
+        var u = Math.atan2(normal.z, normal.x) / Math2.PI2;
+        var v = -Math.asin(normal.y) / Math.PI;
+        //console.log(u, v);
+    }
+
+    /*vec3 Normal = normalize(Normal0);
+    vec3 Tangent = normalize(Tangent0);
+    Tangent = normalize(Tangent - dot(Tangent, Normal) * Normal);
+    vec3 Bitangent = cross(Tangent, Normal);
+    vec3 BumpMapNormal = texture(gNormalMap, TexCoord0).xyz;
+    BumpMapNormal = 2.0 * BumpMapNormal - vec3(1.0, 1.0, 1.0);
+    vec3 NewNormal;
+    mat3 TBN = mat3(Tangent, Bitangent, Normal);
+    NewNormal = TBN * BumpMapNormal;
+    NewNormal = normalize(NewNormal);
+    return NewNormal;*/
+</script>

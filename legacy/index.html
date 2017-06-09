@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ReeTracer JS</title>
+</head>
+<body>
+    <div class="container">
+        <canvas id="reetracer-preview" style="width: 640px; height: 480px"></canvas>
+    </div>
+    <script src="bin/reetracer.lib.js"></script>
+    <script>
+
+        var lights = [
+            {
+                type: 'ambient',
+                intensity: 0.1,
+            }, {
+                type: 'point',
+                intensity: 0.9,
+                position: [0, 0, 0]
+            }/*, {
+                type: 'point',
+                intensity: 0.9,
+                position: [-10, -10, 10],
+                color: [255, 255, 0],
+                innerRadius: 10,
+                outerRadius: 30,
+            }/*, {
+                type: 'point',
+                intensity: 2,
+                position: [0, -1.5, 10],
+                innerRadius: 2,
+                outerRadius: 9,
+                color: [255, 255, 0]
+            }*/
+        ];
+        var objects = [
+            /*{ // BOTTOM PLANE
+                type: 'plane',
+                position: [0, -5, 9],
+                normal: [0, 1, 0],
+                material: {
+                    diffuse: {src: 'obj/textures/wood-512.jpg', scale: 0.05},
+                    reflection: 0,
+                    bump: {src: 'obj/textures/wood-512-bump.jpg', scale: 0.05},
+                    specular: 1.5
+                }
+            },/* { // BACK PLANE
+                type: 'plane',
+                position: [0, 0, 25],
+                normal: [0, 0, -1],
+                material: {
+                    diffuse: {src: 'obj/textures/pack/154.JPG', scale: 0.1},
+                    reflection: 0,
+                    normal: {src: 'obj/textures/pack/154_norm.JPG', scale: 0.1, invertX: true, invertY: true},
+                    specular: 0.2
+                }
+            }, { // FRONT PLANE
+                type: 'plane',
+                position: [0, 0, -10],
+                normal: [0, 0, 1],
+                material: {
+                    diffuse: {src: 'obj/textures/pack/154.JPG', scale: 0.1},
+                    reflection: 0,
+                    normal: {src: 'obj/textures/pack/154_norm.JPG', scale: 0.1, invertX: true, invertY: true},
+                    specular: 0.2
+                }
+            }, { // LEFT PLANE
+                type: 'plane',
+                position: [-20, 0, 0],
+                normal: [1, 0, 0],
+                material: {
+                    diffuse: {src: 'obj/textures/pack/154.JPG', scale: 0.1},
+                    reflection: 0,
+                    normal: {src: 'obj/textures/pack/154_norm.JPG', scale: 0.1, invertX: true, invertY: true},
+                    specular: 0.2
+                }
+            }, { // RIGHT PLANE
+                type: 'plane',
+                position: [20, 0, 0],
+                normal: [-1, 0, 0],
+                material: {
+                    diffuse: {src: 'obj/textures/pack/154.JPG', scale: 0.1},
+                    reflection: 0,
+                    normal: {src: 'obj/textures/pack/154_norm.JPG', scale: 0.1, invertX: true, invertY: true},
+                    specular: 0.2
+                }
+            }, { // CEILING PLANE
+                type: 'plane',
+                position: [0, 12, 0],
+                normal: [0, -1, 0],
+                material: {
+                    diffuse: {src: 'obj/textures/wood-512.jpg', scale: 0.05},
+                    reflection: 0,
+                    bump: {src: 'obj/textures/wood-512-bump.jpg', scale: 0.05},
+                    specular: 1.5
+                }
+            }, {
+                type: 'polygon',
+                points: [[-10, -4.9, 23], [0, -4.9, 23], [0, -4.9, 9], [-10, -4.9, 9]],
+                textureCoords: [[0, 1], [1, 1], [1, 0], [0, 0]],
+                renderBackside: true,
+                material: {
+                    //diffuse: [255, 255, 255],
+                    diffuse: {src: 'obj/textures/wood-512.jpg', scale: 1},
+                    bump: {src: 'obj/textures/wood-512-bump.jpg', scale: 1},
+                    reflection: 0,
+                    specular: 1.5
+                }
+            }, {
+                type: 'triangle',
+                points: [[0, -4.999, 23], [10, -4.999, 23], [0, -4.999, 10]],
+                textureCoords: [[0, 0], [1, 0], [1, 1]],
+                renderBackside: true,
+                material: {
+                    diffuse: [255, 255, 255],
+                    diffuse: {src: 'obj/textures/wood-512.jpg', scale: 0.7},
+                    bump: {src: 'obj/textures/wood-512-bump.jpg', scale: 0.7},
+                    reflection: 0,
+                    specular: 1.5
+                }
+            }, {
+                type: 'obj',
+                file: '../obj/plane.obj',
+                scale: 0.5,
+                offset: [0, 0, 20],
+                rotate: [0, 1.6, 0], //, 0.5, 0.5],
+                renderFlat: true,
+                invertNormals: true,
+                material: {
+                    diffuse:  [255, 255, 255],
+                    diffuse: {src: 'obj/textures/plane.png'},
+                    //bump: {src: 'obj/textures/fighter-bump.jpg'},
+                    specular: 1.5
+                }
+            },*/{
+                type: 'obj',
+                file: '../obj/fighter.obj',
+                scale: 0.02,
+                offset: [0, 0, 30],
+                rotate: [0, Math.PI/1.5, 0], //, 0.5, 0.5],
+                renderFlat: true,
+                boundingLevels: [60],
+                invertNormals: true,
+                material: {
+                    diffuse:  [255, 255, 255],
+                    diffuse: {src: 'obj/textures/fighter-diffuse.jpg'},
+                    bump: {src: 'obj/textures/fighter-bump.jpg'},
+                    specular: 1.5
+                }
+            },/* {
+                type: 'obj',
+                file: '../obj/599.obj',
+                scale: 0.015,
+                offset: [-3, 0, 20],
+                rotate: [0, Math.PI/2, Math.PI/2],
+                material: {
+                    diffuse:  [255, 0, 0],
+                    specular: 1
+                }
+            },*//* {
+                type: 'sphere',
+                center: [6, -4, 12],
+                radius: 1,
+                material: {
+                    diffuse: {src: 'obj/textures/wood-diffuse.png', scale: 1, flipUV: true},
+                    normal: {src: 'obj/textures/wood-normal.png', scale: 1, flipUV: true},
+                    specular: 0.5,
+                }
+            } {
+                type: 'obj',
+                file: '../obj/terrain.obj',
+                scale: 0.3,
+                offset: [50, 0, 0],
+                rotate: [-0.2, 0, 0],
+                invertNormals: true,
+                renderFlat: true,
+                boundingLevels: [15],
+                material: {
+                    diffuse:  [255, 255, 255]
+                    //diffuse: {src: 'obj/textures/terrain-diffuse.jpg'},
+                    //normal: {src: 'obj/textures/terrain-normal.png'}
+                }
+            }*/
+        ];
+        var objects = [
+            {
+                type: 'sphere',
+                center: [0, 0, 10],
+                radius: 2,
+                material: {
+                    diffuse: [255,255,255]
+                }
+            },
+            {
+                type: 'sphere',
+                center: [-3, -3, 8],
+                radius: 1,
+                material: {
+                    diffuse: [255,255,255]
+                }
+            }
+        ];
+        // Put some spheres in there
+        for (var i = 0; i < 0; i++) {
+            objects.push({
+                type: 'sphere',
+                center: [Math.random() * 20 - 10, Math.random() * 10 - 5, Math.random() * 10 + 5],
+                radius: Math.random() * 1.5 + 0.5,
+                material: {
+                    diffuse: [Math.round(Math.random() * 200 + 55), Math.round(Math.random() * 200 + 55), Math.round(Math.random() * 200 + 55)],
+                    reflection: Math.random() > 0.6 ? Math.random() : 0,
+                    roughness: Math.random() > 0.6 ? Math.random() * 0.1 : 0,
+                    specular: 0.5,
+                    refraction: 0,
+                    refractionIndex: 1.51 // glass
+                }
+            });
+        }
+
+        var scale = getParam('scale') || 4;
+        var reetracer = new ReeTracer('reetracer-preview', {
+            objects: objects,
+            lights: lights
+        }, {
+            width: 320 * scale,
+            height: 240 * scale,
+            ambientOcclusion: 0,
+            softShadows: 1
+        });
+        reetracer.render(function(){
+
+        });
+
+        /*/
+        var reetracer = new ReeTracer('reetracer-preview', {
+            objects: objects
+        }, {
+            width: 320,
+            height: 240,
+            ambientOcclusion: 0,
+            softShadows: 0
+        });
+        reetracer.render(function(e){
+            if (e.type == 'finished') {
+                var reetracer = new ReeTracer('reetracer', {
+                    objects: objects
+                }, {
+                    width: 640,
+                    height: 480,
+                    ambientOcclusion: 5,
+                    softShadows: 2
+                });
+                reetracer.render(function(e){
+                    if (e.type == 'finished') {
+                        var reetracer = new ReeTracer('reetracer-high', {
+                            objects: objects
+                        }, {
+                            width: 1280,
+                            height: 960,
+                            ambientOcclusion: 30,
+                            softShadows: 15
+                        });
+                        reetracer.render();
+                    }
+                });
+            }
+        });
+        /*/
+
+        //*/
+
+        function getParam(parameterName) {
+            var result = null,
+                    tmp = [];
+            location.search
+                    .substr(1)
+                    .split("&")
+                    .forEach(function (item) {
+                        tmp = item.split("=");
+                        if (tmp[0] === parameterName) result = decodeURIComponent(tmp[1]);
+                    });
+            return result;
+        }
+    </script>
+    <style type="text/css">
+        #reetracer-preview {
+            position: absolute;
+            top: 100px;
+            left: 50%;
+            margin-left: -320px;
+        }
+    </style>
+</body>
+</html>
