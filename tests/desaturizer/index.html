@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>WASM - Desaturizer</title>
+    <style type="text/css">
+        body {
+            background: black;
+            font-family: Calibri, sans-serif;
+            color: white;
+        }
+        #canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            margin: 20px auto;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <button id="button-wasm">Desaturize with WASM!</button>
+    <button id="button-js">Desaturize with JS!</button>
+    <span id="label"></span>
+
+    <script src="desaturizer.js"></script>
+    <script>
+
+        initDesaturizer().then(module => {
+            let desaturizer = module;
+
+            // Create 2d context
+            let canvas = document.getElementById('canvas');
+            canvas.width = 5904;
+            canvas.height = 2262;
+            let ctx = canvas.getContext('2d');
+            // Load image
+            let img = new Image();
+            img.src = 'img/test.jpg';
+            img.onload = function() {
+                ctx.drawImage(img, 0, 0);
+            };
+
+            let buttonWasm = document.getElementById('button-wasm');
+            let buttonJs = document.getElementById('button-js');
+            let label = document.getElementById('label');
+
+            // WebAssembly!
+            buttonWasm.addEventListener('click', function() {
+                startTiming();
+                let imageData = ctx.getImageData(0, 0, 5904, 2262);
+                endTiming('Getting image data');
+                let l = desaturizer.desaturize(imageData.data);
+                console.log(l);
+                endTiming('-');
+                imageData.data.set(l);
+                endTiming('Updating data');
+                ctx.putImageData(imageData, 0, 0);
+                endTiming('Updating image');
+            });
+
+            // JavaScript
+            buttonJs.addEventListener('click', function() {
+                startTiming();
+                let imageData = ctx.getImageData(0, 0, 5904, 2262);
+                endTiming('Getting image data');
+                let l = desaturize(imageData.data);
+                console.log(l);
+                endTiming('Desaturizing');
+                imageData.data.set(l);
+                endTiming('Updating data');
+                ctx.putImageData(imageData, 0, 0);
+                endTiming('Updating image');
+            });
+            function desaturize(data) {
+                let l = data.length;
+                for (let i = 0; i < l; i+=4) {
+                    let avg = (data[i] + data[i+1] + data[i+2]) / 3;
+                    data[i] = avg;
+                    data[i+1] = avg;
+                    data[i+2] = avg;
+                }
+                return data;
+            }
+        });
+
+        let startTime, endTime;
+        function startTiming() {
+            startTime = new Date();
+        }
+        function endTiming(key) {
+            endTime = new Date();
+            console.log(key + ': ' + ((endTime - startTime) / 1000) + 's');
+            startTime = endTime;
+        }
+
+    </script>
+</body>
+</html>

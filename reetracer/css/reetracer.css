@@ -1,0 +1,134 @@
+html, body, div {
+    margin: 0;
+    padding: 0;
+    font-family: Calibri, sans-serif;
+    box-sizing: border-box;
+}
+*:focus {
+    outline: none;
+}
+
+body {
+    background: #555;
+}
+
+div.container {
+    max-width: 1280px;
+    font-size: 0;
+    padding: 20px;
+    margin: 0 auto;
+}
+
+.wasm-loading {
+    display: none;
+}
+
+.col {
+    display: inline-block;
+    font-size: 12px;
+    background: #999;
+    vertical-align: top;
+    box-shadow:
+            inset 0 2px 1px -1px rgba(255,255,255,0.5),
+            inset 2px 0 1px -1px rgba(255,255,255,0.25),
+            inset -2px 0 1px -1px rgba(255,255,255,0.25),
+            0 1px 2px rgba(0,0,0,0.4);
+}
+
+div.display {
+    width: calc(70% - 10px);
+    margin-right: 10px;
+    padding: 10px;
+}
+
+div.display canvas {
+    background-color: #222;
+    display: block;
+}
+
+.settings {
+    width: 25%;
+    padding: 20px;
+}
+
+button {
+    margin-top: 10px;
+    border: 1px solid #333;
+    text-transform: uppercase;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
+    background-color: #777;
+    color: #eee;
+    font-size: 14px;
+    text-align: center;
+    padding: 15px 20px;
+    transition: 0.1s background-color;
+    cursor: pointer;
+    box-shadow:
+        inset 0 2px 1px -1px rgba(255,255,255,0.5),
+        inset 2px 0 1px -1px rgba(255,255,255,0.25),
+        inset -2px 0 1px -1px rgba(255,255,255,0.25),
+        inset 0 -30px 30px -30px rgba(0, 0, 0, 0.3),
+        0 1px 1px rgba(255,255,255,0.4);
+}
+button:hover {
+    background-color: #656565;
+    transition: 0.2s background-color;
+}
+button:disabled {
+    opacity: 0.6;
+    cursor: default;
+    background-color: #656565;
+}
+
+div.settings button {
+    width: 100%;
+}
+
+select {
+    -webkit-appearance: button;
+    -moz-appearance: button;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -webkit-padding-end: 20px;
+    -moz-padding-end: 20px;
+    -webkit-padding-start: 2px;
+    -moz-padding-start: 2px;
+    border-radius: 0;
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    width: 100%;
+    padding: 15px 20px;
+    text-transform: uppercase;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
+    background-color: #999;
+    color: #eee;
+    font-size: 14px;
+    border: 1px solid #333;
+    box-shadow:
+        inset 0 -2px 1px -1px rgba(255,255,255,0.5),
+        inset 2px 0 1px -1px rgba(255,255,255,0.25),
+        inset -2px 0 1px -1px rgba(255,255,255,0.25),
+        inset 0 30px 30px -30px rgba(0, 0, 0, 0.3),
+        0 1px 1px rgba(255,255,255,0.4);
+}
+
+hr {
+    border-color: transparent;
+    border-top-color: rgba(0, 0, 0, 0.3);
+    border-bottom-color: rgba(255, 255, 255, 0.3);
+}
+
+h1 {
+    font-size: 30px;
+}
+h2, h3 {
+    margin-top: 0;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}

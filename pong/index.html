@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PONG</title>
+    <link rel="stylesheet" type="text/css" href="../reetracer/css/reetracer.css" />
+    <style type="text/css">
+        div.col {
+            margin: 100px auto 0;
+            display: block;
+            width: 820px;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="col">
+        <canvas id="canvas" width="800" height="600"></canvas>
+    </div>
+
+    <!-- WebAssembly Solution -->
+    <script src="pong.generated.js"></script>
+    <script src="pong.js"></script>
+
+    <script type="text/javascript">
+
+        Pong.ready(function() {
+            console.log('awesome');
+            Pong.render();
+        });
+
+        /*const btnRenderWasm = document.getElementById('render-wasm-btn');
+        const btnRenderJs = document.getElementById('render-js-btn');
+        const sceneSelect = document.getElementById('scene-select');
+        const sceneDescriptionP = document.getElementById('scene-description');
+        let sceneDescription = null;
+
+        sceneSelectHtml = '<option>...</option>';
+        for (let i in scenes) {
+            sceneSelectHtml += '<option value="' + i + '">' + i + '</option>';
+        }
+        sceneSelect.innerHTML = sceneSelectHtml;
+
+        sceneSelect.addEventListener('change', function() {
+            if (this.value == '...') {
+                disableRendering();
+                sceneDescriptionP.innerHTML = 'Please select a scene';
+            } else {
+                enableRendering();
+                sceneDescription = scenes[this.value];
+                let objectAmounts = {};
+                const translations = {
+                    'sphere' : 'Spheres',
+                    'plane': 'Planes',
+                    'triangle': 'Triangles',
+                    'ambient': 'Ambient light',
+                    'point': 'Point lights'
+                };
+                for (let i in sceneDescription.objects) {
+                    const object = sceneDescription.objects[i];
+                    if (objectAmounts[object.type]) {
+                        objectAmounts[object.type]++;
+                    } else {
+                        objectAmounts[object.type] = 1;
+                    }
+                }
+                let objectDescriptions = [];
+                for (i in objectAmounts) {
+                    objectDescriptions.push(translations[i] + ': ' + objectAmounts[i]);
+                }
+                objectAmounts = {};
+                for (let i in sceneDescription.lights) {
+                    const object = sceneDescription.lights[i];
+                    if (objectAmounts[object.type]) {
+                        objectAmounts[object.type]++;
+                    } else {
+                        objectAmounts[object.type] = 1;
+                    }
+                }
+                for (i in objectAmounts) {
+                    objectDescriptions.push(translations[i] + ': ' + objectAmounts[i]);
+                }
+                sceneDescriptionP.innerHTML =
+                    'Resolution: ' + sceneDescription.settings.width + 'x' + sceneDescription.settings.height
+                    + '<hr>' + objectDescriptions.join('<br>');
+            }
+        });
+
+        const canvas = document.getElementById('canvas');
+
+        canvas.width = 320;
+        canvas.height = 240;
+        canvas.style.width = '100%';
+        canvas.style.height = 240;
+
+        btnRenderWasm.addEventListener('click', function(){
+            ReeTracer.loadScene(sceneDescription, function () {
+                ReeTracer.render(canvas);
+            });
+        });
+
+        btnRenderJs.addEventListener('click', function() {
+            const reetracer = new ReeTracerJs('canvas', sceneDescription);
+            reetracer.render(function(){
+                //
+            });
+        });
+
+        function enableRendering() {
+            btnRenderWasm.disabled = false;
+            btnRenderJs.disabled = false;
+        }
+
+        function disableRendering() {
+            btnRenderWasm.disabled = true;
+            btnRenderJs.disabled = true;
+        }
+
+        function showElements() {
+            let elements = document.getElementsByClassName('wasm-loading');
+            for (let i = 0; i < elements.length; i++) {
+                let element = elements[i];
+                const step = 0.05;
+                let time = 0;
+                element.style.opacity = step;
+                for (let opacity = step; opacity < 1; opacity += step) {
+                    time += 20;
+                    setTimeout(function(){
+                        element.style.opacity = opacity;
+                    }, time);
+                }
+                element.classList.remove('wasm-loading');
+            }
+        }*/
+    </script>
+</body>
+</html>

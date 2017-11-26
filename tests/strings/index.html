@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>WASM - Texture import</title>
+    <style type="text/css">
+        body {
+            background: black;
+            font-family: Calibri, sans-serif;
+            color: white;
+        }
+        #canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            margin: 20px auto;
+        }
+    </style>
+</head>
+<body>
+    <script src="string.js"></script>
+    <script>
+
+        Module.onRuntimeInitialized = function(){
+            const str = "p  0.015\np  102.455 ";
+            const mem = Module._malloc(str.length);
+            Module.writeAsciiToMemory(str, mem);
+            Module.setString(mem, str.length);
+        };
+
+    </script>
+</body>
+</html>
