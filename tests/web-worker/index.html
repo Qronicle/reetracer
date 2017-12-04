@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>WASM - Sending strings</title>
+    <title>WASM - Web workers</title>
     <style type="text/css">
         body {
             background: black;
@@ -21,12 +21,12 @@
     <script src="string.js"></script>
     <script>
 
-        Module.onRuntimeInitialized = function(){
-            const str = "p  0.015\np  102.455 ";
-            const mem = Module._malloc(str.length);
-            Module.writeAsciiToMemory(str, mem);
-            Module.setString(mem, str.length);
-        };
+        const worker = new Worker('string.worker.js');
+
+        worker.postMessage('Hello');
+        worker.addEventListener('message', function (e) {
+            console.log(e);
+        }, false);
 
     </script>
 </body>
