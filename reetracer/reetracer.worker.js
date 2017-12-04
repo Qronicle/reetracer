@@ -11,6 +11,7 @@ ReeTracerModule.onRuntimeInitialized = function () {
 
 // Make ReeTracerWorker methods available for the main thread
 worker.addEventListener('message', function (e, f) {
+    console.debug('[Debug] Called on ReeTracerWorker: ', e.data.type, e.data.params);
     ReeTracerWorker[e.data.type](e.data.params);
 }, false);
 
@@ -18,22 +19,8 @@ ReeTracerWorker = {
 
     loadScene: function (sceneDescription) {
         console.log('>> Loading scene');
-        const defaultSceneSettings = {
-            width: 640,
-            height: 480,
-            numLightRays: 1,
-            maxRayDepth: 3,
-            ambientOcclusion: 0,
-            ambientColor: [0, 0, 0],
-        };
-        for (const s in defaultSceneSettings) {
-            if (typeof sceneDescription.settings[s] == 'undefined') {
-                sceneDescription.settings[s] = defaultSceneSettings[s];
-            }
-        }
         this.scene = new ReeTracerModule.Scene(sceneDescription.settings);
         this.sceneDescription = sceneDescription;
-        this.onFinished = callback;
         this.errors = [];
         this.textures = [];
         this.meshes = [];
@@ -47,24 +34,22 @@ ReeTracerWorker = {
         this.loadDependencies();
     },
 
-    render: function(canvas) {
+    render: function() {
         if (!this.sceneLoaded) {
             return false;
         }
         console.log('>> Rendering scene');
-        const context = canvas.getContext('2d');
-        // Prepare canvas
-        canvas.width = sceneDescription.settings.width;
-        canvas.height = sceneDescription.settings.height;
-        canvas.style.width = '100%';
-        canvas.style.height = sceneDescription.settings.height;
         // Render the scene
-        var start = new Date();
+        const start = new Date();
         data = this.scene.render();
-        var end = new Date();
-        const imageData = new ImageData(new Uint8ClampedArray(data), sceneDescription.settings.width, sceneDescription.settings.height);
-        context.putImageData(imageData, 0, 0);
+        const end = new Date();
         console.log('   Done in ' + ((end - start) / 1000) + ' seconds');
+        worker.postMessage({
+            type: 'renderComplete',
+            params: {
+                data: new Uint8ClampedArray(data)
+            }
+        });
     },
 
     loadDependencies: function () {
@@ -101,31 +86,26 @@ ReeTracerWorker = {
     },
 
     loadTexture: function (src, index) {
-        console.log('   > Started loading image: ' + src);
-        const img = new Image();
-        img.src = src;
-        img.onload = function () {
-            console.log('   > Loaded image: ' + src);
-            // Get image data
-            const canvas = document.createElement('canvas');
-            canvas.width = img.naturalWidth;
-            canvas.height = img.naturalHeight;
-            document.body.appendChild(canvas);
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0, img.naturalWidth, img.naturalHeight);
-            const imageData = ctx.getImageData(0, 0, img.naturalWidth, img.naturalHeight);
-            document.body.removeChild(canvas);
-            // Put image data on the HEAP
-            const mem = ReeTracerModule._malloc(imageData.data.length);
-            ReeTracerModule.writeArrayToMemory(imageData.data, mem);
-            let textureData = ReeTracer.textureMap[index];
-            textureData.width = img.naturalWidth;
-            textureData.height = img.naturalHeight;
-            textureData.address = mem;
-            textureData.size = imageData.data.length;
-            ReeTracer.texturesLoaded++;
-            ReeTracer.tryAndContinue();
-        };
+        worker.postMessage({
+            type: 'loadTexture',
+            params: {
+                src: src,
+                index: index
+            }
+        });
+    },
+
+    textureLoaded: function (e) {
+        // Put image data on the HEAP
+        const mem = ReeTracerModule._malloc(e.data.length);
+        ReeTracerModule.writeArrayToMemory(e.data, mem);
+        let textureData = this.textureMap[e.index];
+        textureData.width = e.width;
+        textureData.height = e.height;
+        textureData.address = mem;
+        textureData.size = e.data.length;
+        this.texturesLoaded++;
+        this.tryAndContinue();
     },
 
     tryAndContinue: function () {
@@ -138,7 +118,7 @@ ReeTracerWorker = {
             this.status = 'Done importing';
             console.log('   Done');
             this.sceneLoaded = true;
-            this.onFinished(this.scene);
+            worker.postMessage({type:'sceneLoaded'});
         }
     },
 

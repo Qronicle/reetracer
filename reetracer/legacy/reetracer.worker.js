@@ -46,13 +46,13 @@ class Renderer {
                 var result = this.scene.rayTrace(ray);
                 var color = result.color;
                 this.setPixel(color);
-                var currTime = performance.now();
+                /*var currTime = performance.now();
                 if (currTime - startTime > 100) {
                     startTime = currTime;
                     this.settings.renderer.postMessage(this.imageData);
                     this.imageData.startIndex += this.imageData.data.length;
                     this.imageData.data = [];
-                }
+                }*/
             }
         }
         var endTime = new Date();

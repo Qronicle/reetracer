@@ -25,6 +25,7 @@
     <script src="scenes.js"></script>
 
     <!-- WebAssembly Solution -->
+    <!-- script src="reetracer.generated.js"></script-->
     <script src="reetracer.js"></script>
     <!-- JavaScript Solution -->
     <script src="legacy/reetracer.lib.js"></script>
@@ -99,15 +100,21 @@
         canvas.style.height = 240;
 
         btnRenderWasm.addEventListener('click', function(){
+            disableRendering();
             ReeTracer.loadScene(sceneDescription, function () {
-                ReeTracer.render(canvas);
+                ReeTracer.render(canvas, function(e){
+                    enableRendering();
+                });
             });
         });
 
         btnRenderJs.addEventListener('click', function() {
             const reetracer = new ReeTracerJs('canvas', sceneDescription);
-            reetracer.render(function(){
-                //
+            disableRendering();
+            reetracer.render(function(e){
+                if (e.type == 'finished') {
+                    enableRendering();
+                }
             });
         });
 

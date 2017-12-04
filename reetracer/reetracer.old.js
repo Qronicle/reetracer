@@ -1,3 +1,13 @@
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//                                                                                                                    //
+// Runs ReeTracer on the main thread, so nono, but kept for some history teachingness                                 //
+//                                                                                                                    //
+// You can just include this file in index.html (and uncomment the inclusion of the generated js) and everything will //
+// keep working fine. maybe.                                                                                          //
+//                                                                                                                    //
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 // For clarity
 const ReeTracerModule = Module;
 
