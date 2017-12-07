@@ -23,11 +23,10 @@
     <button id="button-js">Desaturize with JS!</button>
     <span id="label"></span>
 
-    <script src="desaturizer.js"></script>
+    <script src="desaturizer_c.js"></script>
     <script>
 
-        initDesaturizer().then(module => {
-            let desaturizer = module;
+        Module.onRuntimeInitialized = function () {
 
             // Create 2d context
             let canvas = document.getElementById('canvas');
@@ -47,13 +46,25 @@
 
             // WebAssembly!
             buttonWasm.addEventListener('click', function() {
+                console.log('==== WASM ====');
                 startTiming();
-                let imageData = ctx.getImageData(0, 0, 5904, 2262);
+                const imageData = ctx.getImageData(0, 0, 5904, 2262);
                 endTiming('Getting image data');
-                let l = desaturizer.desaturize(imageData.data);
-                console.log(l);
-                endTiming('-');
-                imageData.data.set(l);
+                const len = imageData.data.length;
+                const mem = Module._malloc(len);
+                endTiming('Allocating memory');
+                Module.writeArrayToMemory(imageData.data, mem);
+                endTiming('Writing image data array to memory');
+                /*let textureData = this.textureMap[e.index];
+                textureData.width = e.width;
+                textureData.height = e.height;
+                textureData.address = mem;
+                textureData.size = e.data.length;
+                this.texturesLoaded++;
+                this.tryAndContinue();*/
+                const newData = Module.desaturize(mem, len);
+                endTiming('Desaturization');
+                imageData.data.set(new Uint8ClampedArray(newData));
                 endTiming('Updating data');
                 ctx.putImageData(imageData, 0, 0);
                 endTiming('Updating image');
@@ -61,14 +72,12 @@
 
             // JavaScript
             buttonJs.addEventListener('click', function() {
+                console.log('==== JS ====');
                 startTiming();
                 let imageData = ctx.getImageData(0, 0, 5904, 2262);
                 endTiming('Getting image data');
                 let l = desaturize(imageData.data);
-                console.log(l);
                 endTiming('Desaturizing');
-                imageData.data.set(l);
-                endTiming('Updating data');
                 ctx.putImageData(imageData, 0, 0);
                 endTiming('Updating image');
             });
@@ -82,7 +91,7 @@
                 }
                 return data;
             }
-        });
+        };
 
         let startTime, endTime;
         function startTiming() {

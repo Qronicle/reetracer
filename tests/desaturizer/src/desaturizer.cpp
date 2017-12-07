@@ -20,7 +20,24 @@ using namespace emscripten;
     return val(typed_memory_view(len, imageData));
 }*/
 
-extern "C" {
+val desaturize(int arrayAddress, int len)
+{
+    uint8_t* imageData = reinterpret_cast<uint8_t*>(arrayAddress);
+    int avg;
+    for (int i = 0; i < len; i += 4) {
+        avg = (imageData[i] + imageData[i+1] + imageData[i+2]) / 3;
+        imageData[i] = avg;
+        imageData[i+1] = avg;
+        imageData[i+2] = avg;
+    }
+    return val(typed_memory_view(len, imageData));
+}
+
+EMSCRIPTEN_BINDINGS(saywut) {
+    function("desaturize", &desaturize);
+}
+
+/*extern "C" {
     void desaturize(unsigned char* imageData, int len)
     {
         int avg;
@@ -31,7 +48,4 @@ extern "C" {
             imageData[i+2] = avg;
         }
     }
-    EMSCRIPTEN_BINDINGS(saywut) {
-        function("_desaturize", &desaturize, allow_raw_pointers());
-    }
-}
+}*/
